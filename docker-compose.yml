@@ -1,0 +1,9 @@
+services:
+  telegram-bot:
+    build: .
+    container_name: tazkiah_bot
+    restart: always
+    env_file:
+      - .env
+    volumes:
+      - ./bot-data:/app/bot-data

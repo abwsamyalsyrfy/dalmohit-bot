@@ -1,0 +1,12 @@
+services:
+  - type: worker
+    name: telegram-tazkiah-bot
+    runtime: python
+    repo: https://github.com/your-username/telegram-library-bot # عدل هذا الرابط إلى مستودعك أو اربطه من واجهة Render
+    buildCommand: pip install -r requirements.txt
+    startCommand: python bot.py
+    envVars:
+      - key: BOT_TOKEN
+        sync: false
+      - key: ADMIN_ID
+        sync: false
