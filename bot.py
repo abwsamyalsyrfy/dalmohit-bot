@@ -277,7 +277,7 @@ async def start(update: Update, ctx: ContextTypes.DEFAULT_TYPE):
         f"• 📖 قراءة منظمة لكل سلسلة\n"
         f"• 🔍 بحث ذكي في كل المكتبة\n"
         f"• 🔖 إشارات مرجعية + حفظ التقدم\n"
-        f"• ⭐ مفضلة + ❓ استفسار للمؤلف\n\n"
+        f"• ⭐ مفضلة + ❓ استفسار للمؤلف والمشرفين\n\n"
         f"👇 اختر سلسلة للبدء:"
     )
     await update.message.reply_text(txt, parse_mode="HTML", reply_markup=main_kb())
@@ -292,7 +292,8 @@ async def help_cmd(update: Update, ctx: ContextTypes.DEFAULT_TYPE):
         "🔍 /search — البحث المباشر في المكتبة\n"
         "🔖 /bookmarks — استعراض إشاراتك المرجعية\n"
         "⭐ /favorites — استعراض رسائلك المفضلة\n"
-        "🔐 /admin — لوحة إدارة محتوى المكتبة \n\n"
+        "🆔 /whoami — معرفة معرّف حسابك الرقمي في تيليجرام\n"
+        "🔐 /admin — لوحة إدارة محتوى المكتبة والمشرفين\n\n"
         "💡 <i>يمكنك أيضاً كتابة أي نص في المحادثة للبحث الفوري في جميع محتويات المكتبة.</i>",
         parse_mode="HTML",
         reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton("🏠 القائمة الرئيسية", callback_data="m:main")]])
@@ -397,12 +398,12 @@ async def whoami_cmd(update: Update, ctx: ContextTypes.DEFAULT_TYPE):
         parse_mode="HTML"
     )
 
-# ─── لوحة الإدارة (Admin Panel) ───
+# ─── لوحة المشرفين (Admin Panel) ───
 def admin_menu_kb(user_id=None):
     rows = [
         [InlineKeyboardButton("📚 إدارة السلاسل والمحتوى", callback_data="ad:series")],
         [InlineKeyboardButton("➕ إنشاء سلسلة جديدة", callback_data="ad:newseries")],
-        [InlineKeyboardButton("👥 إدارة المسؤولين", callback_data="ad:admins")],
+        [InlineKeyboardButton("👥 إدارة المسؤولين والمشرفين", callback_data="ad:admins")],
         [InlineKeyboardButton("📊 إحصائيات عامة للمكتبة", callback_data="ad:stats")],
         [InlineKeyboardButton("🏠 القائمة الرئيسية", callback_data="m:main")],
     ]
@@ -412,7 +413,7 @@ async def admin_cmd(update: Update, ctx: ContextTypes.DEFAULT_TYPE):
     user = update.effective_user
     if not user or not is_admin(user.id):
         logger.warning("/admin denied for user_id=%s", user.id if user else None)
-        await update.message.reply_text("⛔ هذا الأمر مخصص لمديري المكتبة فقط.")
+        await update.message.reply_text("⛔ هذا الأمر مخصص لمديري ومشرفي المكتبة فقط.")
         return
     await update.message.reply_text(
         "🔐 <b>لوحة تحكم وإدارة مكتبة المحيط</b>\n\nاختر القسم المطلوب لإدارته فوراً:",
@@ -454,7 +455,7 @@ async def render_bulk_view(q, ctx, sid, page):
         InlineKeyboardButton("🔢 تحديد بنطاق (مثال: 5-20)", callback_data=f"ad:bsel_range:{sid}:{page}")
     ])
     rows.append([
-        InlineKeyboardButton("🔄 تحديد الكل", callback_data=f"ad:binvert:{sid}:{page}"),
+        InlineKeyboardButton("🔄 عكس التحديد", callback_data=f"ad:binvert:{sid}:{page}"),
         InlineKeyboardButton("❌ إلغاء تحديد الكل", callback_data=f"ad:bclear:{sid}:{page}")
     ])
 
@@ -525,6 +526,8 @@ async def admin_callback(update, ctx, data):
             f"🔢 الترتيب الحالي: <b>{current_pos}</b> من أصل <b>{len(INDEX)}</b>\n"
             f"📌 الموضوع: {esc(info.get('topic', 'غير محدد'))}\n"
             f"📝 عدد الرسائل: <b>{len(msgs)}</b> رسالة\n"
+            f"📊 إجمالي الأحرف: <b>{total_chars}</b> حرف\n"
+            f"📅 الفترة: {esc(info.get('period', 'غير محددة'))}\n"
             f"<code>━━━━━━━━━━━━━━━━━━━━</code>",
             parse_mode="HTML",
             reply_markup=InlineKeyboardMarkup([
@@ -950,6 +953,8 @@ async def admin_callback(update, ctx, data):
             f"<code>━━━━━━━━━━━━━━━━━━━━</code>\n"
             f"📚 إجمالي السلاسل: <b>{total_series}</b> سلسلة\n"
             f"📝 إجمالي الرسائل: <b>{total_msgs}</b> رسالة\n"
+            f"📊 إجمالي الأحرف: <b>{total_chars:,}</b> حرف\n"
+            f"👥 عدد المشرفين والمدراء: <b>{admins_count}</b>\n"
             f"<code>━━━━━━━━━━━━━━━━━━━━</code>",
             parse_mode="HTML",
             reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton("⬅️ رجوع", callback_data="ad:home")]])
@@ -1001,9 +1006,10 @@ async def cb(update: Update, ctx: ContextTypes.DEFAULT_TYPE):
             f"ℹ️ <b>عن مكتبة المحيط للتزكية</b>\n\n"
             f"📚 قناة المحيط لتزكية النفس\n"
             f"✍️ د. سامي المؤيد\n"
+            f"📅 الفترة: 2017 – 2026\n"
             f"📝 إجمالي الرسائل: {total_all} رسالة\n"
             f"📂 عدد السلاسل: {len(INDEX)}\n"
-            f"🎯 فهم وفكر سليم — علم صحيح ",
+            f"🎯 تربية روحية — فهم سليم — عقلانية إسلامية",
             parse_mode="HTML",
             reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton("🏠 رجوع", callback_data="m:main")]])
         )
