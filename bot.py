@@ -33,7 +33,7 @@ from telegram.ext import (
 
 BOT_TOKEN = os.environ.get("BOT_TOKEN", "").strip()
 ADMIN_ID_RAW = os.environ.get("ADMIN_ID", "0").strip()
-DATA_DIR = os.path.join(os.path.dirname(__file__), "bot_data")
+DATA_DIR = os.path.join(os.path.dirname(__file__), "bot-data")
 
 logging.basicConfig(
     format="%(asctime)s - %(levelname)s - %(message)s",
