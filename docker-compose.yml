@@ -6,4 +6,4 @@ services:
     env_file:
       - .env
     volumes:
-      - ./bot-data:/app/bot-data
+      - ./bot_data:/app/bot_data

@@ -2,7 +2,8 @@ services:
   - type: worker
     name: telegram-tazkiah-bot
     runtime: python
-    repo: https://github.com/your-username/telegram-library-bot # عدل هذا الرابط إلى مستودعك أو اربطه من واجهة Render
+    # ⬇️ عدّل هذا الرابط إلى مستودعك على GitHub أو اربطه من واجهة Render
+    repo: https://github.com/your-username/telegram-library-bot
     buildCommand: pip install -r requirements.txt
     startCommand: python bot.py
     envVars:
@@ -10,3 +11,9 @@ services:
         sync: false
       - key: ADMIN_ID
         sync: false
+      # اختياري: رابط قاعدة بيانات MySQL للمزامنة الخارجية
+      # - key: DATABASE_URL
+      #   sync: false
+      # اختياري: معرفات مشرفين إضافيين مفصولة بفواصل
+      # - key: ADMIN_IDS
+      #   sync: false
