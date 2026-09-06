@@ -33,7 +33,7 @@ from telegram.ext import (
 
 BOT_TOKEN = os.environ.get("BOT_TOKEN", "").strip()
 ADMIN_ID_RAW = os.environ.get("ADMIN_ID", "0").strip()
-DATA_DIR = os.path.join(os.path.dirname(__file__), "bot-data")
+DATA_DIR = os.path.join(os.path.dirname(__file__), "bot_data")
 
 logging.basicConfig(
     format="%(asctime)s - %(levelname)s - %(message)s",
@@ -45,7 +45,7 @@ logger = logging.getLogger(__name__)
 os.makedirs(DATA_DIR, exist_ok=True)
 
 def load_json(filename, default=None):
-    file_path = os.path.join(DATA_DIR, filename)
+    file_path = os.path.join(_DIR, filename)
     if not os.path.exists(file_path):
         return default if default is not None else ({} if filename.endswith("index.json") or filename.endswith("admins.json") else [])
     with open(file_path, "r", encoding="utf-8") as f:
