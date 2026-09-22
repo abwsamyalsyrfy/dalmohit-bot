@@ -1,9 +1,3 @@
-aiogram
-pyTelegramBotAPI
-fastapi
-uvicorn
-aiosqlite
-python-dotenv
-pandas
-requests
-aiohttp
+python-telegram-bot>=21.0
+pymysql>=1.1.0
+python-dotenv>=1.0.0
